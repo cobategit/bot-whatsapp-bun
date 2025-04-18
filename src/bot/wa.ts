@@ -1,8 +1,9 @@
 import { AutoReplyCommand } from '@/utils/auto-reply.js'
 import { Boom } from '@hapi/boom'
-import { DisconnectReason, makeWASocket, proto, useMultiFileAuthState } from '@whiskeysockets/baileys'
+import { ConnectionState, DisconnectReason, makeWASocket, proto, useMultiFileAuthState } from '@whiskeysockets/baileys'
 import chalk from 'chalk'
 import { pino } from 'pino'
+import * as qrcode from 'qrcode-terminal'
 import readline from 'readline'
 import { MessageService } from '../services/message-service.js'
 import { NSFWFilter } from '../utils/nsfw.js'
@@ -56,13 +57,28 @@ async function conversation(body: string, sender: string | undefined, msg: proto
     }
 }
 
+function connUpdateWA(sock: any) {
+    sock.ev.on('connection.update', (update: Partial<ConnectionState>) => {
+        const { connection, lastDisconnect, qr } = update
+
+        if (qr) qrcode.generate(qr, { small: true })
+
+        if (connection === 'close') {
+            const shouldReconnect = (lastDisconnect?.error as Boom)?.output?.statusCode !== DisconnectReason.loggedOut
+            if (shouldReconnect) startWhatsappBot()
+        } else if (connection === 'open') {
+            console.log(chalk.greenBright('✅ WhatsApp bot ready!'))
+        }
+    })
+}
+
 export async function startWhatsappBot() {
     console.log(chalk.blue("🎁 Memulai Koneksi Ke WhatsApp"))
 
     const { state, saveCreds } = await useMultiFileAuthState('auth/wa')
     const sock = makeWASocket({
         logger: pino({ level: "silent" }),
-        printQRInTerminal: !usePairingCode,
+        printQRInTerminal: true,
         auth: state,
         browser: ["Ubuntu", "Chrome", "20.0.04"],
         version: [2, 3000, 1015901307]
@@ -72,11 +88,6 @@ export async function startWhatsappBot() {
 
     sock.ev.on('creds.update', saveCreds)
 
-    const commandParser = new CommandParser()
-    const messageService = new MessageService(sock)
-    const autoReplyCommand = new AutoReplyCommand()
-    const nsfwFilter = new NSFWFilter()
-
     sock.ev.on('messages.upsert', async ({ messages }) => {
         const listColor = [chalk.red, chalk.green, chalk.yellow, chalk.magenta, chalk.cyan, chalk.white, chalk.blue]
         const randomColor = listColor[Math.floor(Math.random() * listColor.length)] || chalk.white
@@ -84,9 +95,15 @@ export async function startWhatsappBot() {
         const msg = messages[0]
         if (!msg?.message) return
 
+        console.log(chalk.blueBright(`sender : ${msg.pushName} - ${msg.key.remoteJid}`))
+
         const body = msg.message.conversation ?? msg.message.extendedTextMessage?.text ?? ""
         const sender = msg.key.remoteJid
         const pushname = msg.pushName ?? "Cobate"
+        const commandParser = new CommandParser(body)
+        const messageService = new MessageService(sock)
+        const autoReplyCommand = new AutoReplyCommand()
+        const nsfwFilter = new NSFWFilter()
 
         console.log(
             chalk.yellow.bold("Credit : Cobate"),
@@ -99,13 +116,5 @@ export async function startWhatsappBot() {
         await conversation(body, sender!, msg, messageService, autoReplyCommand, nsfwFilter, commandParser)
     })
 
-    sock.ev.on('connection.update', (update) => {
-        const { connection, lastDisconnect } = update
-        if (connection === 'close') {
-            const shouldReconnect = (lastDisconnect?.error as Boom)?.output?.statusCode !== DisconnectReason.loggedOut
-            if (shouldReconnect) startWhatsappBot()
-        } else if (connection === 'open') {
-            console.log('✅ WhatsApp bot ready!')
-        }
-    })
+    connUpdateWA(sock)
 }

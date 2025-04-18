@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15
+    container_name: wa-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: pg
+      POSTGRES_PASSWORD: cobate
+      POSTGRES_DB: wa_bot_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer
+    container_name: wa-adminer
+    restart: always
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres_data:

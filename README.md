@@ -6,10 +6,9 @@ Bot WhatsApp modular dan ringan menggunakan [Bun.js](https://bun.sh), mendukung 
 
 ## 🚀 Fitur Utama
 
-- 🔧 Command Parser Modular (`!help`, dll)
+- 🔧 Command Parser Modular (`!help`, `!produk`, dll)
 - 🧠 Integrasi ChatGPT (`!ask`) ( ongoing )
 - 🧹 Middleware Filter kata kasar / NSFW
-- 🤖 Dukungan Multi-platform (WhatsApp & Discord) ( ongoing )
 
 ---
 
@@ -18,7 +17,6 @@ Bot WhatsApp modular dan ringan menggunakan [Bun.js](https://bun.sh), mendukung 
 - **[Bun.js](https://bun.sh)** – Runtime super cepat
 - **[Baileys](https://github.com/WhiskeySockets/Baileys)** – WhatsApp Web API
 - **[PostgreSQL](https://www.postgresql.org/)** – Database ( ongoing )
-- **[Zod](https://zod.dev)** – Validasi payload ( ongoing )
 - **[Kysely]** – ORM ( ongoing )
 
 ---
