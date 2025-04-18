@@ -6,9 +6,8 @@ Bot WhatsApp modular dan ringan menggunakan [Bun.js](https://bun.sh), mendukung 
 
 ## 🚀 Fitur Utama
 
-- 🔧 Command Parser Modular (`!help`, `!ask`, `!order`, dll)
-- 📦 PostgreSQL untuk histori & data user/pesanan ( ongoing )
-- 🧠 Integrasi ChatGPT Mini (`!ask`) ( ongoing )
+- 🔧 Command Parser Modular (`!help`, dll)
+- 🧠 Integrasi ChatGPT (`!ask`) ( ongoing )
 - 🧹 Middleware Filter kata kasar / NSFW
 - 🤖 Dukungan Multi-platform (WhatsApp & Discord) ( ongoing )
 

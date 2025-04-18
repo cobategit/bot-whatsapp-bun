@@ -2,7 +2,7 @@ export class NSFWFilter {
     private readonly nsfwWords: string[]
 
     constructor() {
-        this.nsfwWords = ['babi', 'anjing', 'tolol', 'kontol', 'memek', 'bangsat', 'ngentot', 'asu', "pantek", "bajingan"] // Ganti dengan kata-kata yang ingin difilter
+        this.nsfwWords = ['babi', 'anjing', 'tolol', 'kontol', 'memek', 'bangsat', 'ngentot', 'asu', "pantek", "bajingan", "pepek", "jancuk", "puki"]
     }
 
     containsNSFW(text: string): boolean {

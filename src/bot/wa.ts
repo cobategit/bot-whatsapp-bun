@@ -35,7 +35,7 @@ async function checkPairingWhatsApp(sock: any) {
 }
 
 async function conversation(body: string, sender: string | undefined, msg: proto.IWebMessageInfo, messageService: MessageService, autoReplyCommand: AutoReplyCommand, nsfwFilter: NSFWFilter, commandParser: CommandParser) {
-    if (msg.message?.conversation) {
+    if (msg.message?.conversation && !msg.key.fromMe) {
         const cmdParser = commandParser.parse(body)
 
         if (nsfwFilter.containsNSFW(body)) {
