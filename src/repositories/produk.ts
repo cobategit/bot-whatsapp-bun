@@ -25,5 +25,15 @@ export const produkRepo = {
 
     async addProduk(name: string, stock: number, price: number) {
         await db.insertInto('products').values({ name, stock, price }).execute()
+    },
+
+    async checkStock(id: number, qty: number): Promise<boolean> {
+        const row = await db
+            .selectFrom('products')
+            .where('id', '=', id)
+            .select('stock')
+            .executeTakeFirst()
+        if (!row) return false
+        return row.stock >= qty
     }
 }

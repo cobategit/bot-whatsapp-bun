@@ -21,6 +21,23 @@ export interface Products {
   updated_at: Generated<Timestamp | null>;
 }
 
+export interface Transactions {
+  created_at: Generated<Timestamp>;
+  deleted_at: Timestamp | null;
+  id: Generated<number>;
+  payment_method: string | null;
+  payment_status: number | null;
+  price: number;
+  product_id: number;
+  product_name: string;
+  quantity: number;
+  status: string;
+  total_price: number;
+  updated_at: Generated<Timestamp | null>;
+  user_phone: string;
+}
+
 export interface DB {
   products: Products;
+  transactions: Transactions;
 }

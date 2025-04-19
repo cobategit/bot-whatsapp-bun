@@ -6,7 +6,8 @@ Bot WhatsApp modular dan ringan menggunakan [Bun.js](https://bun.sh), mendukung 
 
 ## 🚀 Fitur Utama
 
-- 🔧 Command Parser Modular (`!help`, `!produk`, dll)
+- 🔧 Command Parser Modular (`!help`, `!list-produk`, `!beli <nama-produk> <quantity>`, dll)
+- 📦 PostgreSQL untuk check produk, stock, data user/pesanan ( ongoing )
 - 🧠 Integrasi ChatGPT (`!ask`) ( ongoing )
 - 🧹 Middleware Filter kata kasar / NSFW
 
@@ -28,7 +29,6 @@ Bot WhatsApp modular dan ringan menggunakan [Bun.js](https://bun.sh), mendukung 
 src/ 
 ├── bot/ 
 │    ├── wa.ts # Entry point bot WhatsApp 
-│ 
 └── commands/ # Folder command modular 
 │    ├── help.ts # Command bantuan (!help)
 │    └── unknown.ts # Fallback jika command tidak ditemukan 

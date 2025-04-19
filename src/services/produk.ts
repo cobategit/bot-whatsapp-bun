@@ -1,3 +1,4 @@
+import { Produk } from '@/domains/produk'
 import { produkRepo } from '@/repositories/produk'
 
 export const produkService = {
@@ -5,14 +6,20 @@ export const produkService = {
         return await produkRepo.findAll()
     },
 
-    async beliProduk(nama: string) {
+    async beliProduk(nama: string, quantity: number): Promise<Produk> {
         const produk = await produkRepo.findByName(nama)
+        const checkStock = await produkRepo.checkStock(produk?.id ?? 0, quantity)
         if (!produk) throw new Error('Produk tidak ditemukan')
         if (!produk.isAvailable()) throw new Error('Stok habis')
+        if (!checkStock) throw new Error('Stok tidak cukup')
 
-        produk.decreaseStock(1)
-        await produkRepo.decreaseStock(produk.id, 1)
+        produk.decreaseStock(quantity)
+        await produkRepo.decreaseStock(produk.id, quantity)
 
         return produk
     },
+
+    async checkStock(id: number, qty: number): Promise<boolean> {
+        return await produkRepo.checkStock(id, qty)
+    }
 }

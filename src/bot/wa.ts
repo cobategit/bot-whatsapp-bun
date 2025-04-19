@@ -3,7 +3,6 @@ import { Boom } from '@hapi/boom'
 import { ConnectionState, DisconnectReason, makeWASocket, proto, useMultiFileAuthState } from '@whiskeysockets/baileys'
 import chalk from 'chalk'
 import { pino } from 'pino'
-import * as qrcode from 'qrcode-terminal'
 import readline from 'readline'
 import { MessageService } from '../services/message-service.js'
 import { NSFWFilter } from '../utils/nsfw.js'
@@ -30,7 +29,7 @@ async function checkPairingWhatsApp(sock: any) {
     if (usePairingCode && !sock.authState.creds.registered) {
         console.log(chalk.green("☘  Masukkan Nomor Dengan Awal 62"))
         const phoneNumber = await question("> ")
-        const code = await sock.requestPairingCode(process.env.PHONE_NUMBER ?? phoneNumber.trim())
+        const code = await sock.requestPairingCode(phoneNumber.trim())
         console.log(chalk.cyan(`🎁  Pairing Code Whatsapp : ${code}`))
     }
 }
@@ -59,9 +58,7 @@ async function conversation(body: string, sender: string | undefined, msg: proto
 
 function connUpdateWA(sock: any) {
     sock.ev.on('connection.update', (update: Partial<ConnectionState>) => {
-        const { connection, lastDisconnect, qr } = update
-
-        if (qr) qrcode.generate(qr, { small: true })
+        const { connection, lastDisconnect } = update
 
         if (connection === 'close') {
             const shouldReconnect = (lastDisconnect?.error as Boom)?.output?.statusCode !== DisconnectReason.loggedOut
@@ -78,7 +75,7 @@ export async function startWhatsappBot() {
     const { state, saveCreds } = await useMultiFileAuthState('auth/wa')
     const sock = makeWASocket({
         logger: pino({ level: "silent" }),
-        printQRInTerminal: true,
+        printQRInTerminal: !usePairingCode,
         auth: state,
         browser: ["Ubuntu", "Chrome", "20.0.04"],
         version: [2, 3000, 1015901307]
@@ -100,7 +97,7 @@ export async function startWhatsappBot() {
         const body = msg.message.conversation ?? msg.message.extendedTextMessage?.text ?? ""
         const sender = msg.key.remoteJid
         const pushname = msg.pushName ?? "Cobate"
-        const commandParser = new CommandParser(body)
+        const commandParser = new CommandParser(body, msg.key.remoteJid?.split("@")[0])
         const messageService = new MessageService(sock)
         const autoReplyCommand = new AutoReplyCommand()
         const nsfwFilter = new NSFWFilter()

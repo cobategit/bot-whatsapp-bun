@@ -17,9 +17,10 @@
     "lint:fix": "eslint . --fix",
     "test:unit": "bun test --testPathPattern=unit",
     "test": "bun test",
-    "schema-db": "npx kysely-codegen --out-file ./src/types/db.d.ts",
-    "migrate-table": "bun kysely migrate make",
-    "migrate-db": "bun kysely migrate:latest"
+    "schema:db": "npx kysely-codegen --out-file ./src/types/db.d.ts",
+    "migrate:table": "bun kysely migrate make",
+    "migrate:db": "bun kysely migrate:latest",
+    "migrate:rollback": "kysely migrate:rollback --all"
   },
   "dependencies": {
     "@whiskeysockets/baileys": "^6.7.16",
